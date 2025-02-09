@@ -1,7 +1,5 @@
 @{
-    # Script module or binary module file associated with this manifest.
-    RootModule = 'activedirectory.psm1'
-
+   
     # Version number of this module.
     ModuleVersion = '1.0.0'
 
@@ -15,7 +13,7 @@
     CompanyName = 'Swissgrid AG'
 
     # Description of the functionality provided by this module
-    Description = 'Module to manage SwissGridOwner attribute in Active Directory groups.'
+    Description = 'Toolbox to assist in daily tasks'
 
     # Functions to export from this module
     FunctionsToExport = @('Get-SwissGridOwner', 'Set-SwissGridOwner', 'Get-DnsInfo')
@@ -31,6 +29,9 @@
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess
     PrivateData = @{
+    
+    # File list of all files in the module
+    FileList = @('activedirectory.psm1', 'dns.psd1')
 
     }
 }
