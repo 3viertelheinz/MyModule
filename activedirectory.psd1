@@ -18,7 +18,7 @@
     Description = 'Module to manage SwissGridOwner attribute in Active Directory groups.'
 
     # Functions to export from this module
-    FunctionsToExport = @('Get-SwissGridOwner', 'Set-SwissGridOwner')
+    FunctionsToExport = @('Get-SwissGridOwner', 'Set-SwissGridOwner', 'Get-DnsInfo')
 
     # Cmdlets to export from this module
     CmdletsToExport = @()
