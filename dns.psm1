@@ -62,3 +62,5 @@ function Get-DnsInfo {
 
     return $result
 }
+
+Export-ModuleMember -Function Get-DnsInfo
