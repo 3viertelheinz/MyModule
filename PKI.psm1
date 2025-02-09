@@ -1,4 +1,4 @@
-function Sign-AllScripts {
+function Set-ScriptSignature {
     <#
     .SYNOPSIS
     Signs all PowerShell scripts in the current directory.
@@ -10,7 +10,7 @@ function Sign-AllScripts {
     The thumbprint of the code-signing certificate to use for signing the scripts.
 
     .EXAMPLE
-    PS> Sign-AllScripts -CertificateThumbprint "ABC123DEF456..."
+    PS> Set-ScriptSignature -CertificateThumbprint "ABC123DEF456..."
     Signs all PowerShell scripts in the current directory using the specified certificate.
     #>
 
@@ -72,5 +72,4 @@ function Get-CertificateList {
     }
 }
 
-Export-ModuleMember -Function Sign-AllScripts, Get-CertificateList
-
+Export-ModuleMember -Function Set-ScriptSignature, Get-CertificateList

@@ -1,5 +1,4 @@
 @{
-   
     # Version number of this module.
     ModuleVersion = '1.0.0'
 
@@ -18,7 +17,14 @@
     RootModule = 'ToolBox.psm1'
 
     # Functions to export from this module
-    FunctionsToExport = @('Get-SwissGridOwner', 'Set-SwissGridOwner', 'Get-DnsInfo')
+    FunctionsToExport = @(
+        'Get-SwissGridOwner',
+        'Set-SwissGridOwner',
+        'Get-DnsInfo',
+        'Set-ScriptSignature',
+        'Get-CertificateList',
+        'Get-FunctionVerbsFrequency'
+    )
 
     # Cmdlets to export from this module
     CmdletsToExport = @()
@@ -33,7 +39,7 @@
     PrivateData = @{
     
     # File list of all files in the module
-    FileList = @('activedirectory.psm1', 'dns.psd1')
+    FileList = @('activedirectory.psm1', 'dns.psm1', 'PKI.psm1', 'Miscellaneoius.psm1')
 
     }
 }
