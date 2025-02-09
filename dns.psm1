@@ -1,63 +1,66 @@
-<#
-.SYNOPSIS
-Retrieves DNS information for a given FQDN or IP address.
-
-.DESCRIPTION
-The Get-DnsInfo function accepts a Fully Qualified Domain Name (FQDN) or an IP address as input and retrieves DNS information. 
-It checks if the PTR record matches the input and verifies if a reverse lookup zone exists. The function returns the information as a hashtable.
-
-.PARAMETER InputValue
-The FQDN or IP address to query. This parameter is mandatory.
-
-.OUTPUTS
-Hashtable
-Returns a hashtable containing the following keys:
-- FQDN: The Fully Qualified Domain Name.
-- IP: The IP address.
-- PtrMatchesInput: A boolean indicating if the PTR record matches the input.
-- ReverseLookupZoneExists: A boolean indicating if a reverse lookup zone exists.
-
-.EXAMPLE
-PS> Get-DnsInfo -InputValue "example.com"
-Returns DNS information for the FQDN "example.com".
-
-.EXAMPLE
-PS> Get-DnsInfo -InputValue "192.168.1.1"
-Returns DNS information for the IP address "192.168.1.1".
-
-#>
 function Get-DnsInfo {
+    <#
+    .SYNOPSIS
+    Retrieves DNS information for a given FQDN or IP address.
+
+    .DESCRIPTION
+    The Get-DnsInfo function accepts a Fully Qualified Domain Name (FQDN) or an IP address as input and retrieves DNS information. 
+    It checks if the PTR record matches the input and verifies if a reverse lookup zone exists. The function returns the information as a hashtable.
+
+    .PARAMETER FQDN
+    The Fully Qualified Domain Name to query. This parameter is optional but either FQDN or IPAddress must be provided.
+
+    .PARAMETER IPAddress
+    The IP address to query. This parameter is optional but either FQDN or IPAddress must be provided.
+
+    .OUTPUTS
+    Hashtable
+    Returns a hashtable containing the following keys:
+    - FQDN: The Fully Qualified Domain Name.
+    - IP: The IP address.
+    - PtrMatchesInput: A boolean indicating if the PTR record matches the input.
+    - ReverseLookupZoneExists: A boolean indicating if a reverse lookup zone exists.
+
+    .EXAMPLE
+    PS> Get-DnsInfo -FQDN "example.com"
+    Returns DNS information for the FQDN "example.com".
+
+    .EXAMPLE
+    PS> Get-DnsInfo -IPAddress "192.168.1.1"
+    Returns DNS information for the IP address "192.168.1.1".
+    #>
+
     param (
-        [Parameter(Mandatory=$true, Position=0)]
-        [string]$InputValue
+        [Parameter(Mandatory=$false, Position=0)]
+        [string]$FQDN,
+
+        [Parameter(Mandatory=$false, Position=1)]
+        [string]$IPAddress
     )
 
-    $result = @{}
-    $fqdn = $null
-    $ip = $null
-
-    if ($InputValue -match '^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$') {
-        $fqdn = $InputValue
-        $ip = [System.Net.Dns]::GetHostAddresses($fqdn) | Select-Object -First 1
-    } elseif ($InputValue -match '^\d{1,3}(\.\d{1,3}){3}$') {
-        $ip = $InputValue
-        $fqdn = [System.Net.Dns]::GetHostEntry($ip).HostName
-    } else {
-        Write-Error "Invalid input. Please provide a valid FQDN or IP address."
+    if (-not $FQDN -and -not $IPAddress) {
+        Write-Error "You must provide either a FQDN or an IP address."
         return
     }
 
-    $result.FQDN = $fqdn
-    $result.IP = $ip
+    $result = @{ FQDN = $null; IP = $null; PtrMatchesInput = $false; ReverseLookupZoneExists = $false }
 
-    if ($ip) {
-        $ptrRecord = [System.Net.Dns]::GetHostEntry($ip).HostName
-        $result.PtrMatchesInput = ($ptrRecord -eq $fqdn)
-    } else {
-        $result.PtrMatchesInput = $false
+    if ($FQDN) {
+        $result.FQDN = $FQDN
+        $result.IP = [System.Net.Dns]::GetHostAddresses($FQDN) | Select-Object -First 1
     }
 
-    $reverseLookupZoneExists = Test-Connection -ComputerName $ip -Count 1 -ErrorAction SilentlyContinue
+    if ($IPAddress) {
+        $result.IP = $IPAddress
+        $result.FQDN = [System.Net.Dns]::GetHostEntry($IPAddress).HostName
+    }
+
+    if ($result.IP) {
+        $ptrRecord = [System.Net.Dns]::GetHostEntry($result.IP).HostName
+        $result.PtrMatchesInput = ($ptrRecord -eq $result.FQDN)
+    }
+
+    $reverseLookupZoneExists = Test-Connection -ComputerName $result.IP -Count 1 -ErrorAction SilentlyContinue
     $result.ReverseLookupZoneExists = $reverseLookupZoneExists
 
     return $result

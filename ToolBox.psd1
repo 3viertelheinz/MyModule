@@ -15,6 +15,8 @@
     # Description of the functionality provided by this module
     Description = 'Toolbox to assist in daily tasks'
 
+    RootModule = 'ToolBox.psm1'
+
     # Functions to export from this module
     FunctionsToExport = @('Get-SwissGridOwner', 'Set-SwissGridOwner', 'Get-DnsInfo')
 
