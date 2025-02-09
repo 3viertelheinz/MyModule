@@ -52,22 +52,26 @@ function Get-CertificateList {
 
     .OUTPUTS
     PSCustomObject
-    Returns a custom object containing the certificate's subject, thumbprint, and expiration date.
+    Returns a custom object containing the certificate's subject, thumbprint, expiration date, and type.
 
     .EXAMPLE
     PS> Get-CertificateList
     Lists all certificates in the current user's certificate store.
     #>
 
+    param ()
+
     # Get all certificates from the current user's certificate store
     $certificates = Get-ChildItem -Path Cert:\CurrentUser\My
 
     # Create a custom object for each certificate
     $certificates | ForEach-Object {
+        $certType = ($_.EnhancedKeyUsageList | ForEach-Object { $_.FriendlyName }) -join ', '
         [PSCustomObject]@{
-            Subject       = $_.Subject
-            Thumbprint    = $_.Thumbprint
+            Subject        = $_.Subject
+            Thumbprint     = $_.Thumbprint
             ExpirationDate = $_.NotAfter
+            Type           = $certType
         }
     }
 }
